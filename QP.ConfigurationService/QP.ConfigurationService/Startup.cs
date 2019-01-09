@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using QP.ConfigurationService.Services;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace QP.ConfigurationService
 {
@@ -26,8 +28,23 @@ namespace QP.ConfigurationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var jwtConfiguration = Configuration.GetSection("Jwt");
+            
+            services.AddAuthentication(jwtConfiguration["Scheme"]).AddJwtBearer(
+                jwtConfiguration["Scheme"],
+                options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = jwtConfiguration["Issuer"],
+                        ValidAudience = jwtConfiguration["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtConfiguration["Secret"])
+                        )
+                    };
+                }
+            );
             services.AddSingleton<ICustomersConfigurationsService, CustomersConfigurationsService>();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -44,6 +61,7 @@ namespace QP.ConfigurationService
                 app.UseHsts();
             }
 
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

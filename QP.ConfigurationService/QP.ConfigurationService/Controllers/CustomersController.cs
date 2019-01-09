@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QP.ConfigurationService.Services;
 
@@ -18,6 +19,7 @@ namespace QP.ConfigurationService.Controllers
             _customersConfigurationsService = customersConfigurationsService;
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult Get(string id)
         {
