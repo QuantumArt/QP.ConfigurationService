@@ -2,6 +2,7 @@
 using QP.ConfigurationService.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
@@ -19,13 +20,19 @@ namespace QP.ConfigurationService.Services
         const string ConfigFilePathKey = "QpConfigurationPath";
 
         string _configFilePath;
+        FileSystemWatcher _configFileWatcher;
         XmlSerializer _configSerializer = new XmlSerializer(typeof(Configuration));
         Dictionary<string, CustomerConfiguration> _customersConfigurations = new Dictionary<string, CustomerConfiguration>();
 
         public CustomersConfigurationsService(IConfiguration configuration)
         {
+
             _configFilePath = configuration.GetValue<string>(ConfigFilePathKey);
 
+            if (String.IsNullOrWhiteSpace(_configFilePath) || !File.Exists(_configFilePath))
+                return;
+
+            SubscribeOnConfigChanges();
             UpdateConfigurations();
         }
 
@@ -48,6 +55,26 @@ namespace QP.ConfigurationService.Services
             {
                 // TODO: log
                 _customersConfigurations = new Dictionary<string, CustomerConfiguration>();
+            }
+        }
+
+        void SubscribeOnConfigChanges()
+        {
+            try
+            {
+                _configFileWatcher = new FileSystemWatcher
+                {
+                    Path = Path.GetDirectoryName(_configFilePath),
+                    Filter = Path.GetFileName(_configFilePath)
+                };
+
+                _configFileWatcher.Changed +=
+                    (object sender, FileSystemEventArgs e) => { UpdateConfigurations(); };
+                _configFileWatcher.EnableRaisingEvents = true;
+            }
+            catch (Exception ex)
+            {
+                // TODO: log
             }
         }
     }
