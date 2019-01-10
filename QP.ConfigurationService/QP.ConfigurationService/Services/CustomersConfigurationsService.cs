@@ -14,6 +14,7 @@ namespace QP.ConfigurationService.Services
     public interface ICustomersConfigurationsService
     {
         CustomerConfiguration GetCustomerConfig(string customerName);
+        ICollection<string> GetCustomersNames();
     }
 
     public class CustomersConfigurationsService : ICustomersConfigurationsService
@@ -44,6 +45,11 @@ namespace QP.ConfigurationService.Services
         public CustomerConfiguration GetCustomerConfig(string customerName)
         {
             return _customersConfigurations.GetValueOrDefault(customerName);
+        }
+
+        public ICollection<string> GetCustomersNames()
+        {
+            return _customersConfigurations.Keys;
         }
 
         void UpdateConfigurations()

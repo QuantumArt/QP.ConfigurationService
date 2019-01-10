@@ -8,20 +8,20 @@ using QP.ConfigurationService.Services;
 
 namespace QP.ConfigurationService.Controllers
 {
-    [Route("api/v1/customers")]
+    [Route("api/v1")]
     [ApiController]
-    public class CustomersController : Controller
+    public class ConfigurationsController : Controller
     {
         ICustomersConfigurationsService _customersConfigurationsService;
 
-        public CustomersController(ICustomersConfigurationsService customersConfigurationsService)
+        public ConfigurationsController(ICustomersConfigurationsService customersConfigurationsService)
         {
             _customersConfigurationsService = customersConfigurationsService;
         }
 
         [Authorize]
-        [HttpGet("{id}")]
-        public ActionResult Get(string id)
+        [HttpGet("customers/{id}")]
+        public ActionResult GetCustomerConfiguration(string id)
         {
             var result = _customersConfigurationsService.GetCustomerConfig(id);
 
@@ -31,6 +31,13 @@ namespace QP.ConfigurationService.Controllers
             }
 
             return Json(result);
+        }
+
+        [Authorize]
+        [HttpGet("customers")]
+        public ActionResult GetCustomers()
+        {
+            return Json(_customersConfigurationsService.GetCustomersNames());
         }
     }
 }
