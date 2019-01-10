@@ -12,9 +12,9 @@ namespace QP.ConfigurationService.Controllers
     [ApiController]
     public class ConfigurationsController : Controller
     {
-        ICustomersConfigurationsService _customersConfigurationsService;
+        IQpConfigurationService _customersConfigurationsService;
 
-        public ConfigurationsController(ICustomersConfigurationsService customersConfigurationsService)
+        public ConfigurationsController(IQpConfigurationService customersConfigurationsService)
         {
             _customersConfigurationsService = customersConfigurationsService;
         }
@@ -38,6 +38,13 @@ namespace QP.ConfigurationService.Controllers
         public ActionResult GetCustomers()
         {
             return Json(_customersConfigurationsService.GetCustomersNames());
+        }
+
+        [Authorize]
+        [HttpGet("variables")]
+        public ActionResult GetVariables()
+        {
+            return Json(_customersConfigurationsService.GetVariables());
         }
     }
 }

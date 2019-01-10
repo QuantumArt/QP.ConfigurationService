@@ -11,26 +11,28 @@ using System.Xml.Serialization;
 
 namespace QP.ConfigurationService.Services
 {
-    public interface ICustomersConfigurationsService
+    public interface IQpConfigurationService
     {
         CustomerConfiguration GetCustomerConfig(string customerName);
         ICollection<string> GetCustomersNames();
+        Dictionary<string, string> GetVariables();
     }
 
-    public class CustomersConfigurationsService : ICustomersConfigurationsService
+    public class QpConfigurationService : IQpConfigurationService
     {
         const string ConfigFilePathKey = "QpConfigurationPath";
 
-        readonly ILogger<CustomersConfigurationsService> _logger;
+        readonly ILogger<QpConfigurationService> _logger;
 
         string _configFilePath;
         FileSystemWatcher _configFileWatcher;
         XmlSerializer _configSerializer = new XmlSerializer(typeof(Configuration));
         Dictionary<string, CustomerConfiguration> _customersConfigurations = new Dictionary<string, CustomerConfiguration>();
+        Dictionary<string, string> _variables = new Dictionary<string, string>();
 
-        public CustomersConfigurationsService(
+        public QpConfigurationService(
             IConfiguration configuration,
-            ILogger<CustomersConfigurationsService> logger)
+            ILogger<QpConfigurationService> logger)
         {
             _logger = logger;
             _configFilePath = configuration.GetValue<string>(ConfigFilePathKey);
@@ -52,6 +54,11 @@ namespace QP.ConfigurationService.Services
             return _customersConfigurations.Keys;
         }
 
+        public Dictionary<string, string> GetVariables()
+        {
+            return _variables;
+        }
+
         void UpdateConfigurations()
         {
             try
@@ -60,6 +67,7 @@ namespace QP.ConfigurationService.Services
                 {
                     var config = (Configuration)_configSerializer.Deserialize(xmlTextReader);
                     _customersConfigurations = config.Customers.ToDictionary(c => c.Name, c => c);
+                    _variables = config.Variables.ToDictionary(v => v.Name, v => v.Value);
                 }
                 _logger.LogInformation("Configuration successfully updated");
             }

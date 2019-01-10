@@ -44,7 +44,7 @@ namespace QP.ConfigurationService
                     };
                 }
             );
-            services.AddSingleton<ICustomersConfigurationsService, CustomersConfigurationsService>();
+            services.AddSingleton<IQpConfigurationService, QpConfigurationService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

@@ -4,7 +4,8 @@
   <!-- DO NOT PUBLISH THIS FILE ON THE WEB -->
   <!-- *********************************** -->
   <app_vars>
-    <app_var app_var_name="var_name">var_value</app_var>
+    <app_var app_var_name="var_name_1">var_value_1</app_var>
+    <app_var app_var_name="var_name_2">var_value_2</app_var>
   </app_vars>
   <customers>
     <customer customer_name="customer1" exclude_from_schedulers="true">

@@ -12,5 +12,9 @@ namespace QP.ConfigurationService.Models
         [XmlArray("customers")]
         [XmlArrayItem("customer")]
         public CustomerConfiguration[] Customers { get; set; }
+
+        [XmlArray("app_vars")]
+        [XmlArrayItem("app_var")]
+        public ApplicationVariable[] Variables { get; set; }
     }
 }
