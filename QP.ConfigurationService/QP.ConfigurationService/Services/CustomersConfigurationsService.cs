@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using QP.ConfigurationService.Models;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,18 @@ namespace QP.ConfigurationService.Services
     {
         const string ConfigFilePathKey = "QpConfigurationPath";
 
+        readonly ILogger<CustomersConfigurationsService> _logger;
+
         string _configFilePath;
         FileSystemWatcher _configFileWatcher;
         XmlSerializer _configSerializer = new XmlSerializer(typeof(Configuration));
         Dictionary<string, CustomerConfiguration> _customersConfigurations = new Dictionary<string, CustomerConfiguration>();
 
-        public CustomersConfigurationsService(IConfiguration configuration)
+        public CustomersConfigurationsService(
+            IConfiguration configuration,
+            ILogger<CustomersConfigurationsService> logger)
         {
-
+            _logger = logger;
             _configFilePath = configuration.GetValue<string>(ConfigFilePathKey);
 
             if (String.IsNullOrWhiteSpace(_configFilePath) || !File.Exists(_configFilePath))
@@ -50,10 +55,11 @@ namespace QP.ConfigurationService.Services
                     var config = (Configuration)_configSerializer.Deserialize(xmlTextReader);
                     _customersConfigurations = config.Customers.ToDictionary(c => c.Name, c => c);
                 }
+                _logger.LogInformation("Configuration successfully updated");
             }
             catch (Exception ex)
             {
-                // TODO: log
+                _logger.LogError(ex, "Failed to update configuration");
                 _customersConfigurations = new Dictionary<string, CustomerConfiguration>();
             }
         }
@@ -71,10 +77,12 @@ namespace QP.ConfigurationService.Services
                 _configFileWatcher.Changed +=
                     (object sender, FileSystemEventArgs e) => { UpdateConfigurations(); };
                 _configFileWatcher.EnableRaisingEvents = true;
+
+                _logger.LogInformation($"Subscribed on config file updates: {_configFilePath}");
             }
             catch (Exception ex)
             {
-                // TODO: log
+                _logger.LogError(ex, "Failed to subscribe on config updates");
             }
         }
     }
