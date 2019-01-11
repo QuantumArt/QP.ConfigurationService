@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using QP.ConfigurationService.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace QP.ConfigurationService
 {
@@ -44,6 +45,22 @@ namespace QP.ConfigurationService
                     };
                 }
             );
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "QP.ConfigurationService" });
+                c.AddSecurityDefinition(jwtConfiguration["Scheme"], new ApiKeyScheme
+                {
+                    Name = "Authorization",
+                    Type = "apiKey",
+                    In = "headers"
+                });
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { jwtConfiguration["Scheme"], new List<string>() }
+                });
+            });
+
             services.AddSingleton<IQpConfigurationService, QpConfigurationService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -60,6 +77,12 @@ namespace QP.ConfigurationService
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "QP.ConfigurationService API");
+            });
 
             app.UseAuthentication();
             app.UseHttpsRedirection();

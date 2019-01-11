@@ -14,7 +14,7 @@ namespace QP.ConfigurationService.Services
     public interface IQpConfigurationService
     {
         CustomerConfiguration GetCustomerConfig(string customerName);
-        ICollection<CustomerConfiguration> GetCustomersNames();
+        ICollection<CustomerConfiguration> GetCustomersConfigs();
         ICollection<ApplicationVariable> GetVariables();
     }
 
@@ -49,7 +49,7 @@ namespace QP.ConfigurationService.Services
             return _customersConfigurations.GetValueOrDefault(customerName);
         }
 
-        public ICollection<CustomerConfiguration> GetCustomersNames()
+        public ICollection<CustomerConfiguration> GetCustomersConfigs()
         {
             return _customersConfigurations.Values;
         }

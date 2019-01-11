@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QP.ConfigurationService.Models;
 using QP.ConfigurationService.Services;
 
 namespace QP.ConfigurationService.Controllers
@@ -21,7 +22,7 @@ namespace QP.ConfigurationService.Controllers
 
         [Authorize]
         [HttpGet("customers/{id}")]
-        public ActionResult GetCustomerConfiguration(string id)
+        public ActionResult<CustomerConfiguration> GetCustomerConfiguration(string id)
         {
             var result = _customersConfigurationsService.GetCustomerConfig(id);
 
@@ -35,14 +36,14 @@ namespace QP.ConfigurationService.Controllers
 
         [Authorize]
         [HttpGet("customers")]
-        public ActionResult GetCustomers()
+        public ActionResult<ICollection<CustomerConfiguration>> GetCustomers()
         {
-            return Json(_customersConfigurationsService.GetCustomersNames());
+            return Json(_customersConfigurationsService.GetCustomersConfigs());
         }
 
         [Authorize]
         [HttpGet("variables")]
-        public ActionResult GetVariables()
+        public ActionResult<ICollection<ApplicationVariable>> GetVariables()
         {
             return Json(_customersConfigurationsService.GetVariables());
         }
