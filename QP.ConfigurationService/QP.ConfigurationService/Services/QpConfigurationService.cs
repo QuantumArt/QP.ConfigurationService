@@ -14,8 +14,8 @@ namespace QP.ConfigurationService.Services
     public interface IQpConfigurationService
     {
         CustomerConfiguration GetCustomerConfig(string customerName);
-        ICollection<string> GetCustomersNames();
-        Dictionary<string, string> GetVariables();
+        ICollection<CustomerConfiguration> GetCustomersNames();
+        ICollection<ApplicationVariable> GetVariables();
     }
 
     public class QpConfigurationService : IQpConfigurationService
@@ -28,7 +28,7 @@ namespace QP.ConfigurationService.Services
         FileSystemWatcher _configFileWatcher;
         XmlSerializer _configSerializer = new XmlSerializer(typeof(Configuration));
         Dictionary<string, CustomerConfiguration> _customersConfigurations = new Dictionary<string, CustomerConfiguration>();
-        Dictionary<string, string> _variables = new Dictionary<string, string>();
+        Dictionary<string, ApplicationVariable> _variables = new Dictionary<string, ApplicationVariable>();
 
         public QpConfigurationService(
             IConfiguration configuration,
@@ -49,14 +49,14 @@ namespace QP.ConfigurationService.Services
             return _customersConfigurations.GetValueOrDefault(customerName);
         }
 
-        public ICollection<string> GetCustomersNames()
+        public ICollection<CustomerConfiguration> GetCustomersNames()
         {
-            return _customersConfigurations.Keys;
+            return _customersConfigurations.Values;
         }
 
-        public Dictionary<string, string> GetVariables()
+        public ICollection<ApplicationVariable> GetVariables()
         {
-            return _variables;
+            return _variables.Values;
         }
 
         void UpdateConfigurations()
@@ -67,7 +67,7 @@ namespace QP.ConfigurationService.Services
                 {
                     var config = (Configuration)_configSerializer.Deserialize(xmlTextReader);
                     _customersConfigurations = config.Customers.ToDictionary(c => c.Name, c => c);
-                    _variables = config.Variables.ToDictionary(v => v.Name, v => v.Value);
+                    _variables = config.Variables.ToDictionary(v => v.Name, v => v);
                 }
                 _logger.LogInformation("Configuration successfully updated");
             }
