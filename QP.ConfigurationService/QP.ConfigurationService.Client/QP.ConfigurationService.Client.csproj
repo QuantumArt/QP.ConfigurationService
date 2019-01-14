@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Quantum Art</Company>
+    <Version>0.1.0</Version>
+    <Authors>Alexander Tkachenko, Dmitry Panyushkin</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,6 +9,9 @@ using Refit;
 
 namespace QP.ConfigurationService.Client
 {
+    /// <summary>
+    /// Thread-safe client for QP.ConfigurationService.
+    /// </summary>
     public class QPConfigurationService : IQPConfigurationService
     {
         private readonly IQPConfigurationService _service;
