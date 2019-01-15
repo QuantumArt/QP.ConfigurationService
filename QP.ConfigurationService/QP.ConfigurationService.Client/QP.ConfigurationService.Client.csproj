@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QP.ConfigurationService.Models\QP.ConfigurationService.Models.csproj" />
+    <Compile Include="../QP.ConfigurationService/Models/**/*.cs" LinkBase="Models/"/>
   </ItemGroup>
 
 </Project>
