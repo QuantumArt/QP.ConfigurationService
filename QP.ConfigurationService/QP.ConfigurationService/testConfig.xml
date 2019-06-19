@@ -8,7 +8,7 @@
     <app_var app_var_name="var_name_2">var_value_2</app_var>
   </app_vars>
   <customers>
-    <customer customer_name="customer1" exclude_from_schedulers="true">
+    <customer customer_name="customer1" exclude_from_schedulers="true" db_type="postgres">
       <db>Test connection string for customer 1</db>
     </customer>
     <customer customer_name="customer2" exclude_from_schedulers="false">
