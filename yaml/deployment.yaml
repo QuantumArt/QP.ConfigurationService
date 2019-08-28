@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configuration-deployment
+  namespace: dpc-consolidation
+  labels:
+    app: configuration-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configuration-service
+  template:
+    metadata:
+      labels:
+        app: configuration-service
+    spec:
+      containers:
+        - name: configuration-service
+          image: spbdocker03:5000/qp-configuration-service:||version||
+          env:
+            - name: QpConfigurationPath
+              value: /app/config/config.xml
+          volumeMounts:
+          - name: config-pv
+            mountPath: /app/config          
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: config-pv
+          persistentVolumeClaim:
+            claimName: qp-pvc

@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: qp-pvc
+  namespace: dpc-consolidation
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeName: qp-pv
+  resources:
+    requests:
+      storage: 10Mi

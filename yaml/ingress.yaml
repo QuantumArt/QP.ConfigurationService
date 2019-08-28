@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: configuration-ingress
+  namespace: dpc-consolidation
+spec:
+  rules:
+  - host: dpc-configuration-service.dev.qsupport.ru
+    http:
+      paths:
+      - backend:
+          serviceName: configuration-service
+          servicePort: 80
