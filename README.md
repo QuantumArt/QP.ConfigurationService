@@ -46,7 +46,7 @@ Also avaliable image tags can be seen here:
 
 #### 3.3 Running the release
 
-Release [QP.ConfigurationService.Kubernetes](https://tfs.dev.qsupport.ru/tfs/QuantumartCollection/QP/_release?definitionId=16&_a=releases) runs automatically after build. It deploys the application to kubernetes cluster.
+Release [QP.ConfigurationService.Kubernetes](https://tfs.dev.qsupport.ru/tfs/QuantumartCollection/QP/_release?definitionId=16&_a=releases) runs automatically after build. It apply `deployment.yaml` to kubernetes cluster with current image tag. As a result application in cluster will be updated to latest version.
 
 ## 4. Application <a name="application"></a>
 
