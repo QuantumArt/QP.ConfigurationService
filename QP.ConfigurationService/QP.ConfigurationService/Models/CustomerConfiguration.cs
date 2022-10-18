@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace QP.ConfigurationService.Models
@@ -13,6 +10,22 @@ namespace QP.ConfigurationService.Models
 
         [XmlAttribute("exclude_from_schedulers")]
         public bool ExcludeFromSchedulers { get; set; }
+        
+        [XmlIgnore]
+        public DatabaseType DbType { get; set; }
+
+        [XmlAttribute("db_type")]
+        public string TypeXml
+        {
+            get { return DbType.ToString().ToLowerInvariant() ; }
+            set
+            {
+                if (Enum.TryParse<DatabaseType>(value, true, out var parsed))
+                {
+                    DbType = parsed;
+                }
+            }
+        }      
 
         [XmlElement("db")]
         public string ConnectionString { get; set; }

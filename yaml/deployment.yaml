@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conf-service
+  namespace: qp
+  labels:
+    app: conf-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conf-service
+  template:
+    metadata:
+      labels:
+        app: conf-service
+        logging: enabled
+    spec:
+      containers:
+        - name: conf-service
+          image: ||registry||/qp-configuration-service:||version||
+          env:
+            - name: QpConfigurationPath
+              value: /app/config/config.xml
+            - name: Jwt__Secret
+              valueFrom:
+                configMapKeyRef:
+                  key: CONFIGURATION_SERVICE_SECRET
+                  name: conf-service-config
+          volumeMounts:
+          - name: config-pv
+            mountPath: /app/config          
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: config-pv
+          persistentVolumeClaim:
+            claimName: qp-config

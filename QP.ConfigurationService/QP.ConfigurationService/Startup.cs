@@ -11,6 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using QP.ConfigurationService.Services;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace QP.ConfigurationService
 {
@@ -26,13 +31,62 @@ namespace QP.ConfigurationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ICustomersConfigurationsService, CustomersConfigurationsService>();
+            var jwtConfiguration = Configuration.GetSection("Jwt");
+            
+            services.AddAuthentication(jwtConfiguration["Scheme"]).AddJwtBearer(
+                jwtConfiguration["Scheme"],
+                options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = jwtConfiguration["Issuer"],
+                        ValidAudience = jwtConfiguration["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtConfiguration["Secret"])
+                        )
+                    };
+                }
+            );
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddAuthorization();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo() { Title = "QP.ConfigurationService" });
+                var schemeName = jwtConfiguration["Scheme"];
+                var scheme = new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Scheme = schemeName
+                };
+                c.AddSecurityDefinition(schemeName, scheme); 
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    { new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = schemeName
+                            },
+                            Scheme = "oauth2",
+                            Name = schemeName,
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    } 
+                });
+            });
+
+            services.AddSingleton<IQpConfigurationService, QpConfigurationService>();
+            services.AddHostedService<ConfigMonitoringService>();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -43,9 +97,16 @@ namespace QP.ConfigurationService
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            
+            app.UseRouting();
 
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
+            app.UseEndpoints(routes => { routes.MapControllers(); });
         }
     }
 }
