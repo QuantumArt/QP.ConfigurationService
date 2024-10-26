@@ -1,11 +1,11 @@
 # Build temp image
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 COPY .  ./
-RUN dotnet publish -c Release -o /app/out 
+RUN dotnet publish -c Release -o /app/out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME:-ConfigurationService}
@@ -15,4 +15,5 @@ ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
 COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "QP.ConfigurationService.dll"]
+EXPOSE 80
+ENTRYPOINT ["dotnet", "QP.ConfigurationService.dll", "--urls", "http://*:80"]

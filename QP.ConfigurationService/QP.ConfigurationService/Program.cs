@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
 
@@ -15,7 +10,7 @@ namespace QP.ConfigurationService
     {
         public static void Main(string[] args)
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = NLog.LogManager.GetCurrentClassLogger();
             try
             {
                 CreateWebHostBuilder(args).Build().Run();
@@ -38,7 +33,7 @@ namespace QP.ConfigurationService
                     logging =>
                     {
                         logging.ClearProviders();
-                        logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                        logging.SetMinimumLevel(LogLevel.Trace);
                     }
                 )
                 .UseNLog();
