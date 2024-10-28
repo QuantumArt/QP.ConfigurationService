@@ -10,6 +10,10 @@
 
 ## История версий
 
+### QP.ConfigurationService.Client.0.3.0
+
+Обновление библиотек Refit и System.Runtime.Caching
+
 ### QP.ConfigurationService.Client.0.2.0
 
 Добавлена поддержка PostgreSQL
