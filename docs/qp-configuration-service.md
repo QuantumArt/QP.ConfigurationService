@@ -11,6 +11,10 @@
 
 ## История тегов (версий)
 
+#### 1.1.1.0
+
+* Обновление библиотек Refit и Microsoft.AspNetCore.Authentication.JwtBearer
+
 ### 1.1.0.0
 
 * Обновление до .NET 8 (#176488)
